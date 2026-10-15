@@ -46,11 +46,13 @@ jobs:
         cp -r $GITHUB_WORKSPACE/* ~/fox/device/oneplus/enchilada/
 
     - name: Build OrangeFox Recovery
+      shell: bash # Zmuszamy maszyna do pelnego uzycia srodowiska BASH
       run: |
         cd ~/fox
         export ALLOW_MISSING_DEPENDENCIES=true
-        source build/envsetup.sh || . build/envsetup.sh
-        lunch fox_enchilada-eng || lunch omni_enchilada-eng
+        set -e
+        . build/envsetup.sh
+        lunch fox_enchilada-eng
         mka recoveryimage -j$(nproc)
 
     - name: Upload Finished Artifact
