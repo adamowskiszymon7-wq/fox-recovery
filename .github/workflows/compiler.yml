@@ -1,4 +1,4 @@
-ame: OrangeFox Compiler R12.0_2
+name: OrangeFox Compiler R12.0_2
 
 on:
   workflow_dispatch:
