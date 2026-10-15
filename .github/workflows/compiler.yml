@@ -1,0 +1,56 @@
+name: OrangeFox Compiler R12.0_2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 1024
+        swap-size-mb: 6144
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+
+    - name: Install Build Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git aria2 python3-pip bc bison build-essential curl flex g++-multilib gcc-multilib gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+    - name: Install Google Repo Tool
+      run: |
+        mkdir -p ~/bin
+        curl https://googleapis.com > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Sync OrangeFox Source
+      run: |
+        mkdir ~/fox && cd ~/fox
+        git config --global user.name "OrangeFox"
+        git config --global user.email "fox@fox.org"
+        repo init -u https://gitlab.com -b fox_11.0
+        repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags
+
+    - name: Clone Device Tree
+      run: |
+        git clone https://github.com{{ github.repository }}.git ~/fox/device/oneplus/enchilada
+
+    - name: Build OrangeFox Recovery
+      run: |
+        cd ~/fox
+        export ALLOW_MISSING_DEPENDENCIES=true
+        . build/envsetup.sh
+        lunch fox_enchilada-eng
+        mka recoveryimage -j$(nproc)
+
+    - name: Upload Finished Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: OrangeFox-Completed
+        path: ~/fox/out/target/product/enchilada/*.zip
