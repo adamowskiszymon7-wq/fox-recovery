@@ -39,7 +39,7 @@ jobs:
 
     - name: Clone Device Tree
       run: |
-        git clone https://github.com{{ github.repository }}.git ~/fox/device/oneplus/enchilada
+        git clone https://github.com ~/fox/device/oneplus/enchilada
 
     - name: Build OrangeFox Recovery
       run: |
