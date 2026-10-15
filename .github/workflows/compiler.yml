@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout Your Repository
+      uses: actions/checkout@v4
+
     - name: Maximize Build Space
       uses: easimon/maximize-build-space@master
       with:
@@ -37,9 +40,10 @@ jobs:
         repo init -u https://gitlab.com -b fox_11.0
         repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags
 
-    - name: Clone Device Tree
+    - name: Copy Device Tree
       run: |
-        git clone https://github.com ~/fox/device/oneplus/enchilada
+        mkdir -p ~/fox/device/oneplus/enchilada
+        cp -r $GITHUB_WORKSPACE/* ~/fox/device/oneplus/enchilada/
 
     - name: Build OrangeFox Recovery
       run: |
