@@ -54,7 +54,7 @@ jobs:
         mka recoveryimage -j$(nproc)
 
     - name: Upload Finished Artifact
-      uses: actions/with-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: OrangeFox-Completed
         path: ~/fox/out/target/product/enchilada/*.zip
